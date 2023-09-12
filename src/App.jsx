@@ -1,33 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import './App.css'
+import Nav from './Nav'
+import {Routes, Route } from 'react-router-dom'
+import Homepage from './components/Homepage'
+import Puplist from './components/Puplist'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [pups, setPups] = useState([]);
+  useEffect(() => {
+    const fetchPups = async () => {
+      const response = await axios.get('https://fsa-puppy-bowl.herokuapp.com/api/2109-UNF-HY-WEB-PT/players');
+      const data = await response.data();
+      setPups(data);
+    }
+  fetchPups();
+  }, []);
 
   return (
     <>
+    <h1>Welcome To The Puppy Bowl(again)!</h1>
+    <hr />
+    <Nav/>
+    <Routes>
+      <Route path='/' element={<Homepage/>} />
+      <Route path='/pups' element={<Puplist/>} />
+    </Routes>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <ul>
+          {
+          pups.map(pup => {
+            return (
+              <li key={ pups.id }>
+                { pup.name }
+              </li>
+          );
+        })
+      }
+        </ul> 
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+  
     </>
   )
 }
